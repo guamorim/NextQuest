@@ -1,6 +1,6 @@
 package com.nextquest.controller;
 import com.nextquest.dto.CreateUserRequest;
-import com.nextquest.model.User;
+import com.nextquest.dto.UserResponse;
 import com.nextquest.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody @Valid CreateUserRequest request) {
+    public UserResponse createUser(@RequestBody @Valid CreateUserRequest request) {
         return userService.createUser(request);
     }
 }

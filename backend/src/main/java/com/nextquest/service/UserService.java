@@ -1,6 +1,7 @@
 package com.nextquest.service;
 
 import com.nextquest.dto.CreateUserRequest;
+import com.nextquest.dto.UserResponse;
 import com.nextquest.exception.DuplicateResourceException;
 import com.nextquest.model.User;
 import com.nextquest.repository.UserRepository;
@@ -15,12 +16,17 @@ public class UserService {
 		this.userRepository = userRepository;
 	}
 
-	public User createUser(CreateUserRequest request) {
+	public UserResponse createUser(CreateUserRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new DuplicateResourceException("Email already registered");
 		}
 
 		User user = new User(request.getName(), request.getEmail(), request.getPassword());
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+
+		return new UserResponse(
+				savedUser.getId(),
+				savedUser.getName(),
+				savedUser.getEmail());
 	}
 }
