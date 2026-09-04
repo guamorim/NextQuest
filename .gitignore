@@ -1,0 +1,32 @@
+# Maven / Java
+target/
+build/
+*.class
+
+# Maven wrapper
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Spring generated help
+HELP.md
+
+# IDEs
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.factorypath
+.project
+.settings/
+.apt_generated/
+.springBeans
+.sts4-cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
