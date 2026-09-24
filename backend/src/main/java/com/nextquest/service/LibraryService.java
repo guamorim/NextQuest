@@ -53,6 +53,8 @@ public class LibraryService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Game not found: " + request.getGameId()));
 
+        // Return a domain-specific conflict before insert; the database constraint remains
+        // the final safeguard against concurrent duplicate requests.
         boolean alreadyExists = libraryEntryRepository.existsByUserIdAndGameId(userId, request.getGameId());
 
         if (alreadyExists) {
@@ -118,6 +120,7 @@ public class LibraryService {
     }
 
     private LibraryEntry findEntryForUser(Long userId, Long entryId) {
+        // Scope the lookup by owner so another user's entry is treated as nonexistent.
         return libraryEntryRepository.findByIdAndUserId(entryId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Library entry not found for user: " + userId + ", entry: " + entryId));

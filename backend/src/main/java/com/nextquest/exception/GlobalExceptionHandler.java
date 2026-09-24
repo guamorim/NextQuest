@@ -97,6 +97,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
+	// Spring may wrap Hibernate constraint violations, so inspect the cause chain
+	// and classify only the user/game constraint as a duplicate library entry.
 	private boolean isDuplicateLibraryEntry(Throwable exception) {
 		Throwable current = exception;
 
@@ -147,6 +149,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException exception) {
 		
+		// Keep login failures indistinguishable to avoid revealing which emails
+		// are registered.
 		ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Unauthorized",
 				"Invalid email or password", null);
 				

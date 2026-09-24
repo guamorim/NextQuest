@@ -31,6 +31,8 @@ public class JwtService {
 
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).type("JWT").build();
 
+        // Use the user ID as the subject so resource ownership comes from authentication,
+        // rather than from a client-supplied userId.
         JwtClaimsSet claims = JwtClaimsSet.builder().issuer(issuer).subject(userId.toString())
                 .issuedAt(now).expiresAt(now.plus(expiration)).build();
         

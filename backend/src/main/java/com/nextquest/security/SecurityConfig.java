@@ -49,6 +49,8 @@ public class SecurityConfig {
 
         byte[] keyBytes = Base64.getDecoder().decode(encodedSecret);
 
+        // HS256 needs at least a 256-bit secret; fail at startup instead of signing
+        // tokens with a weak key.
         if (keyBytes.length < 32) {
             throw new IllegalArgumentException("JWT secret must contain at least 32 bytes");
         }
