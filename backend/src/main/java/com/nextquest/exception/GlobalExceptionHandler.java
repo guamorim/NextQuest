@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -127,7 +128,7 @@ public class GlobalExceptionHandler {
 					.status(HttpStatus.CONFLICT)
 					.body(response);
 		}
-		
+
 		logger.error("Unexpected database integrity violation", exception);
 
 		ErrorResponse response = new ErrorResponse(
@@ -141,7 +142,15 @@ public class GlobalExceptionHandler {
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(response);
 
-
+	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException exception) {
+		
+		ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Unauthorized",
+				"Invalid email or password", null);
+				
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 
 }

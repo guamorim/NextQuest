@@ -17,15 +17,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/users/{userId}/library")
+@RequestMapping("/api/library")
 public class LibraryController {
     
     private final LibraryService libraryService;
+
+    private Long authenticatedUserId(Jwt jwt) {
+        return Long.valueOf(jwt.getSubject());
+    }
 
     public LibraryController(LibraryService libraryService) {
         this.libraryService = libraryService;
@@ -34,37 +40,37 @@ public class LibraryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LibraryEntryResponse addGameToLibrary(
-            @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody CreateLibraryEntryRequest request) {
-        return libraryService.addGameToLibrary(userId, request);
+        return libraryService.addGameToLibrary(authenticatedUserId(jwt), request);
     }
 
     @GetMapping
     public List<LibraryEntryResponse> getLibrary(
-            @PathVariable("userId") Long userId) {
-        return libraryService.getLibrary(userId);
+             @AuthenticationPrincipal Jwt jwt) {
+        return libraryService.getLibrary(authenticatedUserId(jwt));
     }
 
     @GetMapping("/{entryId}")
     public LibraryEntryResponse getLibraryEntry(
-            @PathVariable("userId") Long userId,
-            @PathVariable("entryId") Long entryId) {
-        return libraryService.getLibraryEntry(userId, entryId);
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long entryId) {
+        return libraryService.getLibraryEntry(authenticatedUserId(jwt), entryId);
     }
 
     @PatchMapping("/{entryId}")
     public LibraryEntryResponse updateLibraryEntry(
-            @PathVariable("userId") Long userId,
-            @PathVariable("entryId") Long entryId,
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long entryId,
             @Valid @RequestBody UpdateLibraryEntryRequest request) {
-        return libraryService.updateLibraryEntry(userId, entryId, request);
+        return libraryService.updateLibraryEntry(authenticatedUserId(jwt), entryId, request);
     }
 
     @DeleteMapping("/{entryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeLibraryEntry(
-            @PathVariable("userId") Long userId,
-            @PathVariable("entryId") Long entryId) {
-        libraryService.removeLibraryEntry(userId, entryId);
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long entryId) {
+        libraryService.removeLibraryEntry(authenticatedUserId(jwt), entryId);
     }
 }
