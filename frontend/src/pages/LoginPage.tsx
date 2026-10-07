@@ -2,15 +2,16 @@ import { type FormEvent, useState } from "react";
 import { useAuth } from "../auth/authContext";
 import { login } from "../services/authService";
 import type { LoginRequest } from "../types/auth";
+import { useNavigate } from "react-router";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,14 +27,12 @@ function LoginPage() {
 
     setIsSubmitting(true);
     setErrorMessage(null);
-    setSuccessMessage(null);
 
     try {
       const response = await login(request);
 
       signIn(response.token);
-      setSuccessMessage("Login successful.");
-      setPassword("");
+      navigate("/library", { replace: true });
     } catch {
       setErrorMessage("Invalid email or password.");
     } finally {
@@ -46,7 +45,6 @@ function LoginPage() {
       <h1>Login</h1>
 
       {errorMessage && <p role="alert">{errorMessage}</p>}
-      {successMessage && <p role="status">{successMessage}</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
